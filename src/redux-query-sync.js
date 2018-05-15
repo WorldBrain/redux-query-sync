@@ -54,7 +54,9 @@ function ReduxQuerySync({
     }
 
     function getQueryValues(location) {
-        const locationParams = new URLSearchParams(location.search);
+        const locationParams = new URLSearchParams(
+            location.hash.substring(location.hash.indexOf('?'))
+        )
         const queryValues = {}
         Object.keys(params).forEach(param => {
             const { defaultValue, stringToValue = s => s } = params[param]
@@ -112,7 +114,9 @@ function ReduxQuerySync({
         const location = getLocation(history)
 
         // Parse the current location's query string.
-        const locationParams = new URLSearchParams(location.search);
+        const locationParams = new URLSearchParams(
+            location.hash.substring(location.hash.indexOf('?'))
+        )
 
         // Replace each configured parameter with its value in the state.
         Object.keys(params).forEach(param => {
@@ -126,7 +130,7 @@ function ReduxQuerySync({
             lastQueryValues[param] = value
         })
         const newLocationSearchString = `?${locationParams}`
-        const oldLocationSearchString = location.search || '?'
+        const oldLocationSearchString = location.hash.substring(location.hash.indexOf('?')) || '?'
 
         // Only update location if anything changed.
         if (newLocationSearchString !== oldLocationSearchString) {
@@ -134,8 +138,8 @@ function ReduxQuerySync({
             ignoreLocationUpdate = true
             const newLocation = {
                 pathname: location.pathname,
-                search: newLocationSearchString,
-                hash: location.hash,
+                search: location.search,
+                hash: location.hash.substring(0, location.hash.indexOf('?')) + newLocationSearchString,
                 state: location.state,
             }
             replaceState
